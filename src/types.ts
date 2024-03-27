@@ -53,9 +53,3 @@ export interface INodeFactory {
   createChild(parent: INode, goal: IGoal, data: IData): INode;
   successors(goal: IGoal, node: INode): INode[];
 }
-
-export interface SerializedNode {
-  data: IData;
-  depth: number;
-  children: SerializedNode[];
-}

@@ -1,5 +1,5 @@
 import { cost, heuristic } from "./score";
-import { IData, INode, IScore, SerializedNode } from "./types";
+import { IData, INode, IScore } from "./types";
 
 export class Node<Data extends IData> implements INode {
   public depth: number;
@@ -68,8 +68,14 @@ export class Root<Data extends IData> extends Node<Data> {
   }
 }
 
-export class NodeSerializer {
-  static serialize(node: INode): SerializedNode {
+export interface SerializedNode<Data extends IData> {
+  data: IData;
+  depth: number;
+  children: SerializedNode<Data>[];
+}
+
+export class NodeSerializer<Data extends IData> {
+  static serialize(node: Node<Data>): SerializedNode<Data> {
     return {
       data: node.data,
       depth: node.depth,
@@ -81,7 +87,7 @@ export class NodeSerializer {
     serializedNode: SerializedNode,
     parent: INode | null = null
   ): INode {
-    const node: INode = {
+    const node: Node<Data> = {
       parent: parent,
       data: serializedNode.data,
       depth: serializedNode.depth,
