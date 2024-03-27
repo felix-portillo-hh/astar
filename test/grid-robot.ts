@@ -1,9 +1,17 @@
 import { Binary, Cost } from "../src/score.modifier";
 import { Score } from "../src/score";
-import { AStar, Node, IData, IGoal, IScoreOptions, IScore } from "../src";
+import {
+  AStar,
+  Node,
+  IData,
+  IGoal,
+  IScoreOptions,
+  IScore,
+  AStarParallel,
+} from "../src";
 
 export class Point implements IData {
-  constructor(public x: number, public y: number) { }
+  constructor(public x: number, public y: number) {}
 
   get id(): string {
     return `${this.x},${this.y}`;
@@ -22,9 +30,9 @@ export class Point implements IData {
       new Point(point.x + 1, point.y),
       new Point(point.x - 1, point.y),
       new Point(point.x, point.y + 1),
-      new Point(point.x, point.y - 1)
+      new Point(point.x, point.y - 1),
     ];
-  };
+  }
 }
 
 export class Goal extends Point implements IGoal {
@@ -35,7 +43,11 @@ export class Goal extends Point implements IGoal {
 
 @Score
 class ManhattanScore implements IScore {
-  constructor(private data: Point, private goal: Goal, public options: IScoreOptions) { }
+  constructor(
+    private data: Point,
+    private goal: Goal,
+    public options: IScoreOptions
+  ) {}
 
   public cost = () => 1;
 
@@ -45,7 +57,7 @@ class ManhattanScore implements IScore {
   @Binary
   public isEven(): boolean {
     return this.data.x % 2 === 0;
-  };
+  }
 }
 
 export class GridRobot {
@@ -53,7 +65,17 @@ export class GridRobot {
     return new AStar<Point, Goal>({
       Score: ManhattanScore,
       scoreOptions: <IScoreOptions>{},
-      successors: node => Point.adjacent(node.data),
+      successors: (node) => Point.adjacent(node.data),
+    }).search(start, goal);
+  }
+}
+
+export class GridRobotParallel {
+  go(start: Point, goal: Goal): Point[] | null {
+    return new AStarParallel<Point, Goal>({
+      Score: ManhattanScore,
+      scoreOptions: <IScoreOptions>{},
+      successors: (node) => Point.adjacent(node.data),
     }).search(start, goal);
   }
 }

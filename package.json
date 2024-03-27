@@ -14,6 +14,8 @@
     "typescript": "^5.4.3"
   },
   "dependencies": {
+    "@post-me/mpi": "^0.1.2",
+    "post-me": "^0.4.5",
     "reflect-metadata": "^0.2.1",
     "tinyqueue": "^2.0.3"
   }
