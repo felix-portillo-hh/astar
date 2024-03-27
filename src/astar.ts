@@ -78,12 +78,14 @@ export class AStarParallel<
   }
 
   public search(start: Data, goal: IGoal): Data[] | null {
+    let finalResult: Data[];
     if (!isMainThread) {
       parentPort.on("message", ({ successor, targetProcessor }) => {
         console.log("TARGET PROCESSOR");
         console.log(targetProcessor);
         if (targetProcessor === workerData.workerID) {
-          this.hdaStar(successor, goal);
+          const result = this.hdaStar(successor, goal);
+          if (result) finalResult = result;
         }
       });
     } else {
@@ -95,15 +97,9 @@ export class AStarParallel<
         this.workerThreads.push(worker);
         const startingNode = this.nodeFactory.createChild(root, goal, start);
         const targetProcessor = this._hashNode(startingNode);
-        parentPort.postMessage({ startingNode, targetProcessor });
-        for (const _ of this.workerThreads) {
-          const result = this.hdaStar(
-            this.nodeFactory.createChild(root, goal, start),
-            goal
-          );
-          if (result) {
-            return result;
-          }
+
+        for (const worker of this.workerThreads) {
+          worker.postMessage({ startingNode, targetProcessor });
         }
       }
     }

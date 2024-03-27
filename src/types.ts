@@ -15,14 +15,18 @@ export interface IScoreOptions {
   cost: {
     discount: Record<string, number>;
     penalty: Record<string, number>;
-  },
+  };
   heuristic: {
     discount: Record<string, number>;
     penalty: Record<string, number>;
-  }
+  };
 }
 
-export type IScoreConstructor<Data extends IData, Goal extends IGoal, Score extends IScore> = new (data: Data, goal: Goal, options: IScoreOptions) => Score;
+export type IScoreConstructor<
+  Data extends IData,
+  Goal extends IGoal,
+  Score extends IScore
+> = new (data: Data, goal: Goal, options: IScoreOptions) => Score;
 
 export interface IScoreFactory {
   createScore(goal: IGoal, data: IData): IScore;
@@ -48,4 +52,10 @@ export interface INodeFactory {
   createRoot(): INode;
   createChild(parent: INode, goal: IGoal, data: IData): INode;
   successors(goal: IGoal, node: INode): INode[];
+}
+
+export interface SerializedNode {
+  data: IData;
+  depth: number;
+  children: SerializedNode[];
 }
